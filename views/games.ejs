@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Games</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='margin-bottom:10px; padding-bottom:10px'>
+    <a href='/addgame'><button class='btn btn-info'  style='margin-top: 10px;margin-bottom: 10px'>Add a game</button></a>
+    <a href='/acceptGames' class='acceptGames' style='display: inline-block;margin-top: 10px;margin-bottom: 10px'><button class='btn btn-success'>Admin Menu</button></a>
+    <button class='btn btn-danger mygame' style='margin-top: 10px;margin-bottom: 10px'>My Submitted Game</button><br/>
+    <input type='text' placeholder='Search Game' class='gamename' style='color:black; width:50%; height:40px; font-size:30px;  padding-left:10px' />
+    <select class="form-control platforms" id="sel1" style='color:black; display:inline-block; width: 15%; border-radius: 0px;height:40px'>
+    </select>
+    <div class='cont'></div>
+  </div>
+</div>
+</body>
+</html>
+<script>
+var x = <%= rights %>;
+var games = <%- JSON.stringify(games) %>;
+var platforms = <%- JSON.stringify(platforms) %>;
+var searchinterval;
+var htmlString;
+var ctr;
+$(document).ready(function(){
+  if(x != 1){
+    $(".acceptGames").css("display", "none");
+  }
+  $(".cont").append(htmlString);
+  var formData = new FormData();
+  formData.append("search", "");
+  formData.append("platform", "");
+  $.ajax({
+    url: '/searchGame',
+    data: formData,
+    type: 'POST',
+    // THIS MUST BE DONE FOR FILE UPLOADING
+    contentType: false,
+    processData: false,
+    success: function(data){
+      console.log(data);
+      for(ctr = data.game.length - 1; ctr > -1; ctr--){
+        htmlString = "<div class='contGame'>";
+        htmlString += "<div class='game'><img style='height:180px; width:130px; margin-top:10px; vertical-align: top; alight: left' src='gamepics/"+data.game[ctr].GameID+"''><div style='display:inline-block; width:40%'><a href='/gamePage/"+data.game[ctr].GameID+"'> <p class='whiteText' style='font-size:20px'>"+data.game[ctr].Game_Name+"</p></a><p class='whiteText'>Description: "+data.game[ctr].Description+"</p><p class='whiteText'>Followers: "+data.game[ctr].Followers+"</p><p class='whiteText'>Platform: "+getPlatform(data.game[ctr].Platform)+"</p></div></div>";
+        htmlString += "</div>";
+        $(".cont").append(htmlString);
+      }
+      $("img").each(function (){
+        this.onerror = function() {
+            this.src='gamepics/default.jpg';
+        }
+      });
+    }
+  })
+  $(".platforms").append("<option>All</option>");
+  for(ctr = 0; ctr < platforms.length; ctr++){
+    $(".platforms").append("<option>"+platforms[ctr].Platform_Name+"</option>");
+  }
+  function getPlatform(m){
+    console.log(m);
+    for(var ctr2 = 0; ctr2 < platforms.length && m != platforms[ctr2].Platform_ID; ctr2++){}
+    return platforms[ctr2].Platform_Name;
+  }
+  $(".platforms").change(function(){
+      $(".gamename").trigger( "keyup" );
+  });
+  $(".gamename").on('keyup', function(){
+    clearInterval(searchinterval);
+    $(".cont").fadeOut(300);
+    $(".contGame").remove();
+      searchinterval = setTimeout(function(){
+      var formData = new FormData();
+      formData.append("search", $(".gamename").val().replace(/'/g,"''"));
+      formData.append("platform", $(".platforms").val());
+      $.ajax({
+        url: '/searchGame',
+        data: formData,
+        type: 'POST',
+        // THIS MUST BE DONE FOR FILE UPLOADING
+        contentType: false,
+        processData: false,
+        success: function(data){
+          console.log(data);
+          for(ctr = data.game.length - 1; ctr > -1; ctr--){
+            htmlString = "<div class='contGame'>";
+            htmlString += "<div class='game'><img style='height:180px; width:130px; margin-top:10px; vertical-align: top; alight: left' src='gamepics/"+data.game[ctr].GameID+"''><div style='display:inline-block;width:40%'><a href='/gamePage/"+data.game[ctr].GameID+"'> <p class='whiteText' style='font-size:20px'>"+data.game[ctr].Game_Name+"</p></a><p class='whiteText'>Description: "+data.game[ctr].Description+"</p><p class='whiteText'>Followers: "+data.game[ctr].Followers+"</p><p class='whiteText'>Platform: "+getPlatform(data.game[ctr].Platform)+"</p></div></div>";
+            htmlString += "</div>";
+            $(".cont").append(htmlString);
+          }
+          $("img").each(function (){
+            this.onerror = function() {
+                console.log('im in');
+                this.src='gamepics/default.jpg';
+            }
+          });
+          $(".cont").fadeIn(300);
+        }
+      })
+    }, 300);
+  });
+  $(".mygame").click(function(){
+    $(".cont").fadeOut(300);
+    $(".contGame").remove();
+    var formData = new FormData();
+    searchinterval = setTimeout(function(){
+    formData.append("search", "");
+    formData.append("platform", "mycreation");
+    $.ajax({
+      url: '/searchGame',
+      data: formData,
+      type: 'POST',
+      // THIS MUST BE DONE FOR FILE UPLOADING
+      contentType: false,
+      processData: false,
+      success: function(data){
+        console.log(data);
+        for(ctr = data.game.length - 1; ctr > -1; ctr--){
+          htmlString = "<div class='contGame'>";
+          htmlString += "<div class='game'><img style='height:180px; width:130px; margin-top:10px; vertical-align: top; alight: left' src='gamepics/"+data.game[ctr].GameID+"''><div style='display:inline-block; width:40%'><a href='/gamePage/"+data.game[ctr].GameID+"'> <p class='whiteText' style='font-size:20px'>"+data.game[ctr].Game_Name+"</p></a><p class='whiteText'>Description: "+data.game[ctr].Description+"</p><p class='whiteText'>Followers: "+data.game[ctr].Followers+"</p><p class='whiteText'>Platform: "+getPlatform(data.game[ctr].Platform)+"</p></div></div>";
+          htmlString += "</div>";
+          $(".cont").append(htmlString);
+        }
+        $("img").each(function (){
+          this.onerror = function() {
+              console.log('im in');
+              this.src='gamepics/default.jpg';
+          }
+        });
+        $(".cont").fadeIn(300);
+      }
+    })
+  }, 300);
+  });
+})
+</script>

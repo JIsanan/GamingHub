@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Achievements</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='font-family: followrate; font-size:20px'>
+      <br>
+      Achievement Name: <br><input style="color:black !important; color:black; width:40%;font-family: Arial; font-size:15px; padding-left:10px" class="name" type="text"><br>
+      Achievement Type:<br>
+      <select class="type" style="color:black !important;font-family: Arial;"  name="platform">
+        <option>Buddy Count</option>
+        <option>Developed Count</option>
+        <option>Follower Count</option>
+      </select><br>
+      Achievement Count: <br><input style="color:black !important; color:black; width:20%; font-family: Arial; font-size:15px; padding-left:10px" class="count" type="text"><br>
+      <p style='vertical-align:top'>Description: </p><textarea class="description" rows="5" style="color:black !important;font-family: Arial; font-size:15px; width: 40%;padding-left:10px;"  type="description"></textarea><br>
+      Exp: <br><input style="color:black !important; color:black; width:20%; font-size:15px; padding-left:10px;font-family: Arial;" class="exp" type="text"><br>
+    <br><button class="submit oyea btn btn-success" style='margin-bottom:20px'>Submit Achievement</button>
+  </div>
+</div>
+</body>
+</html>
+<script>
+  $(document).ready(function(){
+    $("button").click(function(){
+      if($(".name").val().length != 0 && $(".description").val().length != 0){
+          var formData = new FormData();
+          formData.append("name", $('.name').val().replace(/'/g,"''"));
+          formData.append("type", $('.type').val().replace(/'/g,"''"));
+          formData.append("description", $('.description').val().replace(/'/g,"''"));
+          formData.append("count", $('.count').val().replace(/'/g,"''"));
+          formData.append("exp", $('.exp').val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/addChievement',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                alert("successfully added achievement");
+                window.location.href = '/Achievement';
+              }
+          })
+      }
+    });
+  });
+</script>

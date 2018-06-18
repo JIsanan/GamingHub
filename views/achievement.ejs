@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .achieve {
+
+
+      background-color: #3185FC;
+      border-color: #3185FC;
+      color:white;
+    }
+
+    .level{
+
+
+    }
+  </style>
+  <title>Achievements</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='margin-bottom : 0px;'>
+  <h2 >  Level - <p style='display:inline-block' class='level'></p></h2> <h3>EXP: <p style='display:inline-block' class='exp'></p> /<p style='display:inline-block' class='next'></p></h3>
+    <a href='/addAchievement' class='addachievement' style='display:none'><button class='btn btn-success'> Add Achievements</button></a>
+    <div class='cont'></div>
+  </div>
+</div>
+</body>
+</html>
+<script>
+var x = <%= rights %>;
+var y = <%= userID %>;
+var trophies = <%- JSON.stringify(trophies) %>;
+var usertrophies = <%- JSON.stringify(usertrophies) %>;
+var user = <%- JSON.stringify(user) %>;
+var htmlString;
+var ctr;
+$(document).ready(function(){
+  if(x == 1){
+    $(".addachievement").css("display", "block");
+  }
+  $(".level").html(user[0].Level);
+  $(".exp").html(user[0].Exp);
+  $(".next").html(user[0].Next);
+  htmlString = "<div class='contAchievement'><table class='table'><thead><tr><th>Achievement Name</th><th>Description</th><th>Type</th><th>Count</th><th>Exp</th><th>Operation</th></tr></thead><tbody>";
+  for(ctr = 0; ctr < trophies.length; ctr++){
+    if(checkIfAchieved(trophies[ctr].Achievement_ID) == 0){
+      htmlString += "<tr id='"+trophies[ctr].Achievement_ID+"'><td><p class='AchievementName'>"+trophies[ctr].Name+"</p></td><td>"+trophies[ctr].Description+"</td><td>"+typeAchievement(trophies[ctr].Achievement_Type)+"</td><td>"+trophies[ctr].Count+"</td><td>"+trophies[ctr].Exp+"</td><td><button class='btn btn-default achieve' id='"+ctr+"' >Claim</button></td>";
+    }else{
+      console.log("sad");
+    }
+  }
+  htmlString += "</tbody></table></div>";
+  $(".cont").append(htmlString);
+  $(".cont").on('click',".achieve",function(){
+    var formData = new FormData();
+    formData.append("trophyID", $(this).parent().parent().attr('id'));
+    $.ajax({
+      url: '/claimChievement',
+      data: formData,
+      type: 'POST',
+      // THIS MUST BE DONE FOR FILE UPLOADING
+      contentType: false,
+      processData: false,
+      success: function(data){
+        alert(data);
+        window.location.href = '/Achievement';
+      }
+    })
+  });
+  function checkIfAchieved(m){
+    var ctr;
+    for(ctr = 0; ctr < usertrophies.length && (usertrophies[ctr].trophyID != m || usertrophies[ctr].userID != y); ctr++){}
+    if(ctr < usertrophies.length){
+      return 1;
+    }else{
+      return 0;
+    }
+  }
+  function typeAchievement(m){
+    if(m == 0){
+      return "Buddy"
+    }else if(m == 1){
+      return "Developed"
+    }else{
+      return "Follower"
+    }
+  }
+})
+</script>

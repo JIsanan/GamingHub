@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .NewsContent {
+    border-bottom: 1px solid orange;
+    font-size:15px;
+  }
+  .Feed{
+    transition: background-color 0.3s;
+  }
+</style>
+  <title>Profile</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='margin-bottom : 0px;'>
+    <div class='col-md-2' style='height: 130px'>
+      <img class='display' style='width:90px;height:90px;position:absolute;top:0;bottom:0;margin:auto;border-radius:50%;' onerror="javascript:this.src='gamepics/default.jpg'" />
+    </div>
+    <div class='col-md-9 profileName'><p class='name'></p>
+    </div>
+    <div class='col-md-9 col-xs-12'>
+    <p class='desc' style='display:block; float:left;'></p>
+    </div>
+  </div>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground">
+    <span style='display:inline-block; vertical-align: middle; float:left; line-height:35px; font-size: 20px;'>Level: <p class='skill' style='display:inline-block'> </p></span>
+    <p class='isfriends' style='display:none; float:right;'></p>
+    <button class="addFriend btn btn-success" style='float:right; margin-bottom:10px; margin-top: 10px;'>Add Buddy</button>
+  </div>
+  <div class="row col-md-8 col-md-offset-2 col-xs-12" style='padding-left:0px;'>
+    <div class="row fontProfile col-md-4 col-xs-13" style="padding-right:0px;padding-top:0px;margin-right:30px; padding-bottom:0px;font-size:16px;margin-bottom: 0px">
+      <div class='navMenu' style='font-family:followrate;height:100%;position:relative;top:0;right;0'>
+        <button class='Feed' style='height:40px;border: 0;background-color: #7A2600;text-align:center; width:100%; position:relative; !important;display:block' id='1' >Newsfeed</button>
+        <button class='Feed' style='height:40px;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;display:block' id='2'>Games Followed</button>
+      </div>
+    </div>
+    <div class="row contents navBackground fontProfile col-md-8 col-xs-13" style="margin-right:0px;padding-right:40px;padding-top:10px;padding-bottom:10px;padding-left:30px;font-size:16px;">
+      <div class='feedContent' style='text-align:justify'></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
+<script>
+  $(document).ready(function(){
+    var profile =  <%- JSON.stringify(userprofile) %>;
+    var newsfeed =  <%- JSON.stringify(newsfeed) %>;
+    var games =  <%- JSON.stringify(games) %>;
+    var friends =  <%= friends %>;
+    var htmlString, htmlString2;
+    $(".name").html(profile[0].username);
+    $(".desc").html(profile[0].AboutMe);
+    $(".skill").html(profile[0].Level);
+    $(".display").attr('src', 'ppics/'+profile[0].userID+'');
+    if(friends == 0){
+      $(".isfriends").css("display","block");
+    }else if(friends == 1){
+      $(".isfriends").css("display","block");
+      $(".isfriends").html("Request sent");
+      $(".addFriend").css("display", "none");
+    }else if(friends == 3){
+      $(".isfriends").css("display","block");
+      $(".isfriends").html("Sent a request to you");
+      $(".addFriend").css("display", "none");
+    }else{
+      $(".isfriends").html("Buddies");
+      $(".addFriend").css("display", "none");
+    }
+    htmlString = "<div class='cont'>"
+    for(x = newsfeed.length - 1; x >= 0 && x > newsfeed.length - 6; x--){
+      dateToday = newsfeed[x].Date;
+      htmlString += "<p class='NewsContent'>"+dateToday.split('T')[0]+"<br/>"+newsfeed[x].Newsfeed+"</p><br/>";
+    }
+    htmlString += "</div>";
+    var height = $(".navMenu").height();
+    $(".feedContent").append(htmlString);
+    $(".Feed").click(function(){
+        var checkFeed = $(this).attr('id');
+        $(".cont").remove();
+        htmlString = "<div class='cont'>"
+        $("#1").css("background-color", "#C95824");
+        $("#2").css("background-color", "#C95824");
+        if(checkFeed == 1){
+          for(x = newsfeed.length - 1; x >= 0 && x > newsfeed.length - 6; x--){
+            dateToday = newsfeed[x].Date;
+            htmlString += "<p class='NewsContent'>"+dateToday.split('T')[0]+"<br/>"+newsfeed[x].Newsfeed+"</p><br/>";
+          }
+          $("#1").css("background-color", "#7A2600");
+        }else{
+          for(x = 0; x < games.length; x++){
+            htmlString += "<p class='NewsContent'><a class='whiteText' style='margin-left:0px !important' href='/gamePage/"+games[x].GameID+"'>"+games[x].Game_Name+"</a></p><br/>";
+          }
+          $("#2").css("background-color", "#7A2600");
+        }
+        htmlString += "</div>";
+        $(".feedContent").append(htmlString);
+    });
+    $(".addFriend").click(function(){
+        var formData = new FormData();
+        formData.append("name", profile[0].userID);
+        $.ajax({
+            url: '/addBuddy',
+            data: formData,
+            type: 'POST',
+            // THIS MUST BE DONE FOR FILE UPLOADING
+            contentType: false,
+            processData: false,
+            success: function(data){
+              window.location.href = '/profile/'+profile[0].username+'';
+            }
+        })
+    });
+  });
+</script>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+.rateIt{
+background-color: inherit;
+  border:2px solid white;
+}
+  </style>
+  <title>Game Page</title>
+  <% include includes/navbar.ejs %>
+  <div class="row col-md-8 col-md-offset-2 col-xs-12" style='margin-bottom : 0px; padding-bottom: 0px; padding-left:0px;padding-right:0px'>
+    <img style='width:100%;height:200px;display:none' onLoad="javascript:this.style.display ='block'" class='cover'></img>
+  </div>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='margin-bottom : 0px;'>
+    <div class='col-md-2' style='height: 190px'>
+      <img class='display' style='width:90px;height:90px;position:absolute;top:0;bottom:0;margin:auto;' onerror="javascript:this.src='gamepics/default.jpg'" />
+    </div>
+    <div class='col-md-8'>
+      <p class='profileName gamename' style='display:block;margin-bottom:0'></p>
+      <span class='platform label label-primary' style='border-radius:0px;font-size:13px;margin-bottom:10px !important;'></span>
+      <a href="" class='link'><span class='creator label label-success' style='border-radius:0px;font-size:13px;margin-bottom:10px !important;'></span></a>
+      <p class='description' style='margin-top:10px;display:inline-block;text-align: justify;'></p>
+      <br/>
+    <button id='modalBtn' type="button" style='display:none' data-toggle="modal" class='btn btn-default' data-target="#myModal">Edit Game</button><br/>
+    </div>
+    <div class='col-md-2' style='padding-top:10px; height:100%;font-family: followrate; position:absolute; text-align:center; right: 0; top: 0; padding-left: 0px; padding-right:0px;background-color:#F56C2D;'>
+      <p style='display:inline-block; margin-right: 5px;font-family: followrate'>Rating:</p><p class='rating' style='display:inline-block; font-size:15px; font-family: followrate;'></p><br/>
+      <p style='display:inline-block; margin-right: 5px;font-family: followrate'>Followers:</p><p class='followers' style='display:inline-block;font-size:15px;font-family: followrate;'></p>
+      <select name='rate' class='ratingSystem' style='margin-bottom:10px;width:100%;position:relative; font-family:followrate;font-size:17px;text-align-last:center;display:block;color:black; display:'inline-block''>
+        <option value='1'>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+        <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+      </select>
+      <button class='rateIt' style='height:18%;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;margin-bottom:6px;display:block'>Rate</button>
+      <button class='follow' style='height:18%;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;margin-bottom:6px;display:block'>Follow</button>
+    </div>
+  </div>
+  <div class="navBackground row col-md-8 fontProfile col-md-offset-2 col-xs-12" style='margin-top:10px'>
+    <input type='text' class='inputnewsfeed' name='inputnews' style='margin-top:10px;display:none; color:black; width:50%; height:40px; font-size:30px; border-radius: 20px; padding-left:10px' />
+    <button class='btn submitnewsfeed btn-success' style='margin-bottom:10px;display:none'>Submit</button><br/>
+    <p style='font-size:20px;'>News Feed:</p><div class='newsfeed navMenu'></div>
+  </div>
+</div>
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Edit Game</h4>
+        </div>
+        <div class="modal-body">
+          <p>Game Pic: <input type='file' style='display:block' class='uploadProfPic' /><br>
+          <p>Cover Pic:<input type='file' style='display:block' class='uploadCoverPic' /><br>Description:<br>
+            <textarea class="descriptionGame" rows="5" value="" style="color:black !important; font-size:15px; border-radius: 10px; width: 40%;padding-left:10px;"  type="description"></textarea>
+            <br><button class='submitGamePic' style='display:none'>Upload</button></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+</div>
+</div>
+</body>
+</html>
+<script>
+  $(document).ready(function(){
+    var gameInfo =  <%- JSON.stringify(game) %>;
+    var platform =  <%- JSON.stringify(platform) %>;
+    var creator =  <%- JSON.stringify(creator) %>;
+    var newsfeed =  <%- JSON.stringify(newsfeed) %>;
+    var name = "<%= name %>";
+    var follow = <%= follow %>;
+    var rated = <%= rated %>;
+    var ctr;
+    if(follow == 0){
+        $(".follow").html("Follow");
+    }else{
+        $(".follow").html("Unfollow");
+    }
+    $(".cover").attr('src', 'gamepics/cover/'+gameInfo[0].GameID+'');
+    $(".display").attr('src', 'gamepics/'+gameInfo[0].GameID+'');
+    $(".gamename").html(gameInfo[0].Game_Name);
+    $(".creator").html(creator[0].username);
+    $(".platform").html(platform[0].Platform_Name);
+    $(".description").html(gameInfo[0].Description);
+    var rating = <%= rating %>;
+    $(".rating").html(rating.toFixed(1));
+    $(".followers").html(gameInfo[0].Followers);
+    $(".link").attr('href', "/profile/"+creator[0].username+"");
+    if(<%=userID%> == gameInfo[0].Creator_ID){
+      $("#modalBtn").css("display", "block");
+      $(".inputnewsfeed").css("display", "inline-block");
+      $(".submitnewsfeed").css("display", "inline-block");
+      $(".submitGamePic").css("display", "inline-block");
+      $(".uploadProfPic").css("display", "inline-block");
+      $(".uploadCoverPic").css("display", "inline-block");
+    }
+    if(rated == 1){
+      $(".ratingSystem").css("display", "none");
+      $(".rateIt").css("display", "none");
+    }
+    var dateToday;
+    for(ctr = 0; ctr < newsfeed.length; ctr++){
+      dateToday = newsfeed[ctr].Date;
+      $(".newsfeed").append("<p class='NewsContent'>"+dateToday.split('T')[0]+"<br/>"+newsfeed[ctr].Newsfeed+"</p><br/>");
+    }
+    $(".submitnewsfeed").click(function(){
+      if($(".inputnewsfeed").val().length != 0){
+          var formData = new FormData();
+          formData.append("news", $('.inputnewsfeed').val().replace(/'/g,"''"));
+          formData.append("user", creator[0].username);
+          formData.append("gameID", gameInfo[0].GameID);
+          $.ajax({
+              url: '/gamenewsAdded',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                window.location.href = "/gamePage/"+gameInfo[0].GameID+"";
+              }
+          })
+      }
+    });
+    $(".submitGamePic").click(function(){
+        var formData = new FormData();
+        if($(".uploadProfPic").get(0).files[0] || $(".uploadCoverPic").get(0).files[0]){
+          formData.append("game", gameInfo[0].GameID);
+          if($(".uploadProfPic").get(0).files[0]){
+            formData.append("picture", $(".uploadProfPic").get(0).files[0]);
+          }
+          if($(".uploadCoverPic").get(0).files[0]){
+            formData.append("cover", $(".uploadCoverPic").get(0).files[0]);
+          }
+          formData.append("gamedesc", $('.descriptionGame').val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/uploadGamePic',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                window.location.href = "/gamePage/"+gameInfo[0].GameID+"";
+              }
+          })
+        }else{
+          formData.append("game", gameInfo[0].GameID);
+          formData.append("gamedesc", $('.descriptionGame').val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/uploadGamePic',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                window.location.href = "/gamePage/"+gameInfo[0].GameID+"";
+              }
+          })
+        }
+    });
+    $(".follow").click(function(){
+        var formData = new FormData();
+        formData.append("game", gameInfo[0].GameID);
+        if(follow == 1){
+          formData.append("operation", 1);
+        }else{
+          formData.append("operation", 0);
+        }
+        $.ajax({
+            url: '/gameFollow',
+            data: formData,
+            type: 'POST',
+            // THIS MUST BE DONE FOR FILE UPLOADING
+            contentType: false,
+            processData: false,
+            success: function(data){
+              window.location.href = "/gamePage/"+gameInfo[0].GameID+"";
+            }
+        })
+    });
+    $(".rateIt").click(function(){
+        var formData = new FormData();
+        formData.append("game", gameInfo[0].GameID);
+        formData.append("rate", $(".ratingSystem").val());
+        $.ajax({
+            url: '/rate',
+            data: formData,
+            type: 'POST',
+            // THIS MUST BE DONE FOR FILE UPLOADING
+            contentType: false,
+            processData: false,
+            success: function(data){
+              window.location.href = "/gamePage/"+gameInfo[0].GameID+"";
+            }
+        });
+    });
+  });
+</script>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Menu</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground">
+    <button class='AddPlatform btn btn-info' id='modalBtn' data-toggle="modal" data-target="#myModal" style='margin-top:20px'>Add Platform</button>
+    <div class='gamecont'>
+    </div>
+  </div>
+  <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Add Platforms</h4>
+          </div>
+          <div class="modal-body">
+            <p>Platform Name: <input type='text' class='Platformname' />
+              <br><button class='submitPlatform btn btn-success'>Submit Platform</button></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+  </div>
+</div>
+</body>
+</html>
+<script>
+  var games =  <%- JSON.stringify(games) %>;
+  var catcher = <%- JSON.stringify(users) %>;
+  var htmlString;
+  console.log(games);
+  $(document).ready(function(){
+    htmlstring = "<table class='table'><thead><tr><th>Game Name</th><th>Creator</th><th>Operation</th></tr></thead><tbody>";
+    var ctr;
+    for(ctr = 0; ctr < games.length ; ctr++){
+      htmlstring += "<tr id='"+games[ctr].GameID+"'><td><p class='gamename'>"+games[ctr].Game_Name+"</p></td><td><p class='creatorname'> Creator:"+ getUser(games[ctr].Creator_ID) +"</p></td><td><button class='approve btn btn-success'>Approve</button><button class='delete btn btn-danger'>Delete</button></td></tr>";
+    }
+    htmlstring += "</tbody></table>";
+    $(".gamecont").append(htmlstring);
+    $(".gamecont").on('click', '.approve', function(){
+          var formData = new FormData();
+          formData.append("gamename", $(this).parent().parent().attr('id'));
+          formData.append("operation", 0);
+          $.ajax({
+              url: '/Approve',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                   window.location.href = '/acceptGames';
+              }
+          })
+    });
+    $(".gamecont").on('click', '.delete', function(){
+          var formData = new FormData();
+          formData.append("gamename", $(this).parent().parent().attr('id'));
+          formData.append("operation", 1);
+          $.ajax({
+              url: '/Approve',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                   window.location.href = '/acceptGames';
+              }
+          })
+    });
+    $(".submitPlatform").click(function(){
+          var formData = new FormData();
+          formData.append("platform", $(".Platformname").val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/AddPlatform',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                   window.location.href = '/acceptGames';
+              }
+          })
+    });
+  });
+  var ctr2;
+  function getUser(elem){
+    for(ctr2 = 0; ctr2 < catcher.length && catcher[ctr2].userID != elem; ctr2++){
+      console.log(elem);
+    }
+    if(ctr2 < catcher.length){
+      return catcher[ctr2].username;
+    }else{
+      return 0;
+    }
+  }
+</script>

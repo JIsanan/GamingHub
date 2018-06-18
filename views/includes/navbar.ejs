@@ -1,0 +1,180 @@
+<link rel='stylesheet' href='css/bootstrap.css'>
+<script src="js/jquery-3.2.0.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</head>
+<style>
+	@font-face {
+    font-family: pagefont;
+    src: url(fonts/Unna-Regular.ttf);
+	}
+	@font-face{
+		font-family: followrate;
+		src: url(fonts/BEBAS___.TTF)
+	}
+	.navBackground{
+		background-color:#1E262C;
+	}
+	.navMenu{
+		background-color:#F56C2D
+	}
+	.whiteText{
+		margin-left: 10px;
+		transition: color 0.3s;
+		color: white;
+	}
+	.whiteText:hover{
+		color: white;
+		text-decoration: none;
+	}
+	.fontProfile{
+    color: white !important;
+  }
+  .profileName{
+    font-size: 40px;
+  }
+	.userColor{
+      display: inline-block;
+		direction: rtl;
+		color: #bebebe;
+	}
+	.userPicture{
+		display: inline-block;
+		margin-left: 20px;
+		border-radius: 25px;
+		width: 43px;
+		height: 43px;
+	}
+	.userMobilePicture{
+		margin-left: 10px;
+
+		display: inline;
+		border-radius: 25px;
+		width: 25px;
+		height: 25px;
+	}
+	.userMobilePictureCenter{
+	margin-top:-40px;
+	margin-left:410px;
+	}
+	.right{
+		padding-top: 20px;
+		display: inline-block;
+		direction: rtl;
+	}
+	.dropMenu{
+		width: 95vw;
+		background-color: #171717;
+	}
+	.Options{
+		padding-top:20px;
+
+	}
+	.dropbtn {
+
+		display: inline-block;
+		direction: rtl;
+    border: none;
+    cursor: pointer;
+
+}
+
+.dropdown {
+	padding-top: 20px;
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+	#wholePage{
+		background-color: #EDF1F2;
+	}
+  .row{
+    margin-bottom: 30px;
+  }
+  .fontBody{
+    color: white;
+  }
+
+
+	.userColor a{
+		color:white;
+
+	}
+	.userColor a:hover{
+		color:orange;
+		text-decoration: none;
+	}
+</style>
+<body id='wholePage'>
+<div class='container-fluid'>
+	<div class="row navBackground">
+		<div class="col-md-1 col-sm-1 col-xs-1 hidden-md hidden-lg">
+			<div class="dropdown">
+			<button class="dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-align-justify"></span>
+			</button>
+			  <ul class="dropdown-menu dropMenu">
+				<li><a href="/messages">Feed</a></li>
+				<li><a href="/profile">Profile</a></li>
+				<li><a href="/games">Games</a></li>
+				<li><a href="/search">Trophies</a></li>
+				<li><a href="/Achievement">Contact Us</a></li>
+			  </ul>
+			</div>
+		</div>
+		<div class="col-md-7 hidden-sm hidden-xs Options">
+			<img src="ppics\Logo.png"></img>
+			<label>
+			<a href="/messages" class="whiteText">Messages</a>
+			<a href="/profile" class="whiteText">Profile</a>
+			<a href="/games" class="whiteText">Games</a>
+			<a href="/search" class="whiteText">Search</a>
+			<a href="/Achievement" class="whiteText">Achievements</a>
+<!-- <div class="dropdown" style="display: inline-block !important">
+<a class="dropdown-toggle whiteText" data-toggle="dropdown">Search</a>
+  <ul class="dropdown-menu dropMenu" style='width: 20vw !important; overflow: visible;'>
+		     <li>
+		         <form method='POST' action='/search'>
+		         <input type='text' name='user' class='profileSearch'>
+		         <input type='submit' class='btn'>
+		         </form>
+		     </li>
+  </ul>
+</div> -->
+			</label>
+		</div>
+		<div style='padding-top: 10px !important' class="col-md-3 col-md-offset-2 col-sm-3 col-sm-offset-8 col-xs-3 col-xs-offset-8 dropdown">
+			<!-- <img class='drowbtn' src=<%= userID %> class="userMobilePicture hidden-md hidden-lg" width="43" height= "43px"> -->
+				<img class='drowbtn'src='ppics/<%=userID%>' style='margin-right:10px; margin-bottom:10px; border-radius:50%;' onerror="javascript:this.src='gamepics/default.jpg'" class="userPicture hidden-xs hidden-sm" width="53px" height= "53px"></img>
+				<span class="userColor hidden-xs hidden-sm"><%= name %>
+			<!--<a href="/logout" style="margin-right: 10px">Logout</a> -->
+			</span>
+				<div class='dropdown-content'>
+						<a href="/logout" class="whiteText">Logout</a>
+				</div>
+
+		</div>
+	</div>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .Unread{
+    background-color:inherit;
+    border-color: #434343;
+    color: white;
+    padding-right:50px;
+  }
+  .Read{
+    background-color:inherit;
+    border-color: #434343;
+    color: white;
+    padding-right:50px;
+  }
+  .Send{
+    background-color:inherit;
+    border-color: #434343;
+    color: white;
+    padding-right:50px;
+  }
+  .p{
+    color:white;
+  }
+  .Recepient{
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+  .Subject{
+    margin-left: 34px;
+      margin-bottom: 20px;
+  }
+  .Message{
+      margin-left: 27px;
+  }
+</style>
+  <title>Messages</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='margin-bottom : 0px;'>
+    <h2>Inbox</h2>
+    <button class='Unread'>Unread</button><button class='Read'>Read</button><button class='Send'>Send Message</button>
+    <div class='cont'></div>
+  </div>
+</div>
+</body>
+</html>
+<script>
+  $(document).ready(function(){
+    var messages =  <%- JSON.stringify(messages) %>;
+    var senders =  <%- JSON.stringify(users) %>;
+    var y, x;
+    var htmlstring, recepient, reply, msg;
+    recepient = reply = msg = htmlstring = "";
+    function getSenderName(id){
+      for(y = 0; y < senders.length && senders[y].userID != id; y++){}
+      return senders[y].username;
+    }
+    $(".Unread").click(function(){
+      $(".cont2").remove();
+      htmlstring = "<div class='cont2'><table class='table'><thead><tr><th>Sender</th><th>Subject</th><th>Date</th></tr></thead><tbody>";
+      for(y = messages.length - 1; y >= 0; y--){
+        if(messages[y].Marked == 0){
+          dateToday = messages[y].Date;
+          htmlstring += "<tr class='readrow' id='"+messages[y].MessageID+"'><td class='sendername'>"+getSenderName(messages[y].SenderID)+"</td><td class='titlename'>"+messages[y].Title+"</td><td class='date'>"+dateToday.split('T')[0]+"<p style='display:none' class='content'>"+messages[y].Content+"</p></td></tr>"
+        }
+      }
+      htmlstring += "</tbody></table>"
+      $(".cont").append(htmlstring);
+    })
+    $(".Read").click(function(){
+      $(".cont2").remove();
+      htmlstring = "<div class='cont2'><table class='table'><thead><tr><th>Sender</th><th>Subject</th><th>Date</th></tr></thead><tbody>";
+      for(y = messages.length - 1; y >= 0; y--){
+        if(messages[y].Marked == 1){
+          dateToday = messages[y].Date;
+          htmlstring += "<tr class='readrow' id='"+messages[y].MessageID+"'><td class='sendername'>"+getSenderName(messages[y].SenderID)+"</td><td class='titlename'>"+messages[y].Title+"</td><td class='date'>"+dateToday.split('T')[0]+"<p style='display:none' class='content'>"+messages[y].Content+"</p></td></tr>"
+        }
+      }
+      htmlstring += "</tbody></table>"
+      $(".cont").append(htmlstring);
+    })
+    $(".Send").click(function(){
+      $(".cont2").remove();
+      $(".cont").append("<div class='cont2'><div><p class='Message' style='margin-left:0px;font-size:20px'>Message: "+msg+"</p></div>Recepient: <input type='text' style='color:black !important; color:black; width:40%; height:20px; font-size:15px; border-radius: 50px; padding-left:10px' class='Recepient' value='"+recepient+"'> <br/> Subject: <input type='text' style='color:black !important; color:black; width:40%; height:20px; font-size:15px; border-radius: 50px; padding-left:10px'  class='Subject' value='"+reply+"'><br/><p style='display:block'>Content:</p> <textarea cols='20' rows='5' class='Message' style='color:black !important; font-size:15px; border-radius: 10px; width: 40%;padding-left:10px;'></textarea><br/><button class='btn btn-success SendBtn'>Send</button></div>");
+      recepient = "";
+      reply = "";
+      msg = "";
+    })
+    $(".cont").on('click', '.SendBtn', function(){
+        var formData = new FormData();
+        formData.append("title", $(this).siblings(".Subject").val().replace(/'/g,"''"));
+        formData.append("content", $(this).siblings(".Message").val().replace(/'/g,"''"));
+        formData.append("receiver", $(this).siblings(".Recepient").val().replace(/'/g,"''"));
+        $.ajax({
+            url: '/sendMessage',
+            data: formData,
+            type: 'POST',
+            // THIS MUST BE DONE FOR FILE UPLOADING
+            contentType: false,
+            processData: false,
+            success: function(data){
+              if(data == "good"){
+                $("h2").append('<div style="display:none; font-size:15px !important" class="alert alert-success alert-dismissable fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Sent!</strong> Message successfully sent</div>')
+                $(".Unread").trigger( "click" );
+              }else{
+                $("h2").append('<div style="display:none; font-size:15px !important" class="alert alert-danger alert-dismissable fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Error,</strong> no user with that name exists.</div>')
+              }
+              $(".alert").fadeIn(100);
+            }
+        })
+    });
+    $(".cont").on('click', '.readrow', function(){
+        var formData = new FormData();
+        msg = $(this).children(".date").children(".content").html();
+        recepient = $(this).children(".sendername").html();
+        reply = $(this).children(".titlename").html();
+        reply = "reply: " + reply;
+        formData.append("messageID", $(this).attr('id'));
+        removeReadThenAdd($(this).attr('id'));
+        $.ajax({
+            url: '/markedRead',
+            data: formData,
+            type: 'POST',
+            // THIS MUST BE DONE FOR FILE UPLOADING
+            contentType: false,
+            processData: false,
+            success: function(data){
+              $(".Send").trigger( "click" );
+            }
+        })
+    });
+    function getSenderName(id){
+      for(x = 0; x < senders.length && senders[x].userID != id; x++){}
+      return senders[x].username;
+    };
+    function removeReadThenAdd(id){
+      for(x = 0; x < messages.length && messages[x].MessageID != id; x++){}
+      messages[x].Marked = 1;
+    }
+    $(".Unread").trigger("click");
+  });
+</script>

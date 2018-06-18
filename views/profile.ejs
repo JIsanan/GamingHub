@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .NewsContent {
+      border-bottom: 1px solid orange;
+      font-size:15px;
+    }
+    .Feed{
+      transition: background-color 0.3s;
+    }
+
+  </style>
+  <title>Profile</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='margin-bottom : 0px;'>
+    <div class='col-md-2' style='height: 130px'>
+      <img class='display' style='width:90px;height:90px;position:absolute;top:0;bottom:0;margin:auto; border-radius:50%;' onerror="javascript:this.src='gamepics/default.jpg'" />
+    </div>
+    <div class='col-md-9 profileName'><p class='name' style='margin-left:-10px'></p>
+    </div>
+    <div class='col-md-9 col-xs-12'>
+    <p class='desc' style='display:block;text-align: justify; float:left;'></p>
+    </div>
+    <button id='modalBtn' type="button" data-toggle="modal" data-target="#myModal" class='btn btn-default'>Edit Profile</button><br/>
+  </div>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground">
+    <span style='display:inline-block; vertical-align: middle; float:left; line-height:35px; font-size: 20px;'>Level: <p class='skill' style='display:inline-block'> </p></span>
+  </div>
+  <div class="row col-md-8 col-md-offset-2 col-xs-12" style='padding-left:0px;'>
+    <div class="row fontProfile col-md-4 col-xs-13" style="padding-right:0px;padding-top:0px;margin-right:30px;padding-bottom:0px;font-size:16px;margin-bottom: 0px">
+      <div class='navMenu' style='font-family:followrate;height:100%;position:relative;top:0;right;0'>
+        <button class='Feed' style='height:40px;border: 0;background-color: #7A2600;text-align:center; width:100%; position:relative; !important;display:block' id='1' >Your Feed</button>
+        <button class='Feed' style='height:40px;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;display:block' id='2'>Game Feed</button>
+        <button class='Feed' style='height:40px;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;display:block' id='3'>Buddy Feed</button>
+        <button class='Feed' style='height:40px;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;display:block' id='4'>Buddy Request</button>
+        <button class='Feed' style='height:40px;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;display:block' id='5'>Buddies</button>
+        <button class='Feed' style='height:40px;border: 0;background-color: #C95824;text-align:center; width:100%; position:relative; !important;display:block' id='6'>Games Followed</button>
+      </div>
+    </div>
+    <div class="row contents navBackground fontProfile col-md-8 col-xs-13" style="margin-right:0px;padding-right:40px;padding-top:10px;padding-bottom:10px;padding-left:30px;font-size:16px;">
+      <div class='feedContent' style='text-align:justify'></div>
+    </div>
+  </div>
+  </div>
+  <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Edit Profile</h4>
+          </div>
+          <div class="modal-body">
+            <p>Profile Picture: <input type='file' class='uploadProfPic' />
+            <br>About Me:<br>
+              <textarea class="descriptionProf" rows="5" value="" style="color:black !important; font-size:15px; border-radius: 10px; width: 40%;padding-left:10px;"  type="description"></textarea>
+              <br><button class='btn btn-success submitProfPic'>Submit</button></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+  </div>
+</div>
+</body>
+</html>
+<script>
+  $(document).ready(function(){
+    var profile =  <%- JSON.stringify(user) %>;
+    var gamesFollowed =  <%- JSON.stringify(games) %>;
+    var gamesFeed =  <%- JSON.stringify(gamefeed) %>;
+    var friends =  <%- JSON.stringify(friends) %>;
+    var yourfeed =  <%- JSON.stringify(yourFeed) %>;
+    var friendFeed =  <%- JSON.stringify(friendFeed) %>;
+    var friendRequests =  <%- JSON.stringify(friendRequests) %>;
+    var dateToday;
+    var htmlString;
+    var x, y;
+    htmlString = "<div class='cont'>"
+    htmlString += "<input type='text' class='inputfeed' style='width:80%;color:black;' />  <button class='postfeed btn-success btn'>Post Feed</button><br/> ";
+    for(x = yourfeed.length - 1; x >= 0 && x > yourfeed.length - 6; x--){
+      dateToday = yourfeed[x].Date;
+      htmlString += "<p class='NewsContent'>"+dateToday.split('T')[0]+"<br/>"+yourfeed[x].Newsfeed+"</p><br/>";
+    }
+    htmlString += "</div>";
+    $(".display").attr('src', 'ppics/'+profile[0].userID+'');
+    $(".feedContent").append(htmlString);
+    var height = $(".navMenu").height();
+    if($(".contents").height() > height){
+          $(".navMenu").css("height", $(".contents").height());
+    }
+    $(".name").html(profile[0].username);
+    $(".desc").html(profile[0].AboutMe);
+    $(".skill").html(profile[0].Level);
+    $(".Feed").click(function(){
+        var checkFeed = $(this).attr('id');
+        $(".cont").remove();
+        $("#1").css("background-color", "#C95824");
+        $("#2").css("background-color", "#C95824");
+        $("#3").css("background-color", "#C95824");
+        $("#4").css("background-color", "#C95824");
+        $("#5").css("background-color", "#C95824");
+        $("#6").css("background-color", "#C95824");
+        htmlString = "<div class='cont'>"
+        if(checkFeed == 1){
+          $("#1").css("background-color", "#7A2600");
+          htmlString += "<input type='text' class='inputfeed' style='width:80%;color:black;border-radius:0;margin-right:5px' /><button class='postfeed btn-success btn'>Post Feed</button><br/>";
+          for(x = yourfeed.length - 1; x >= 0 && x > yourfeed.length - 6; x--){
+            dateToday = yourfeed[x].Date;
+            htmlString += "<p class='NewsContent'>"+dateToday.split('T')[0]+"<br/>"+yourfeed[x].Newsfeed+"</p><br/>";
+          }
+        }else if(checkFeed == 2){
+          $("#2").css("background-color", "#7A2600");
+          for(x = gamesFeed.length - 1; x >= 0 && x > gamesFeed.length - 6; x--){
+            dateToday = gamesFeed[x].Date;
+            htmlString += "<p class='NewsContent'><a class='whiteText' style='margin-left:0px !important' href='/gamePage/"+gamesFeed[x].GameID+"'>"+getGameName(gamesFeed[x].GameID)+"</a> "+dateToday.split('T')[0]+"<br/>"+gamesFeed[x].Newsfeed+"</p><br/>";
+          }
+        }else if(checkFeed == 3){
+          $("#3").css("background-color", "#7A2600");
+          for(x = friendFeed.length - 1; x >= 0 && x > friendFeed.length - 6; x--){
+            dateToday = friendFeed[x].Date;
+            htmlString += "<p class='NewsContent'><a class='whiteText' style='margin-left:0px !important' href='/profile/"+getBuddyName(friendFeed[x].user_ID)+"'>"+getBuddyName(friendFeed[x].user_ID)+"</a> "+dateToday.split('T')[0]+"<br/>"+friendFeed[x].Newsfeed+"</p><br/>";
+          }
+        }else if(checkFeed == 4){
+          $("#4").css("background-color", "#7A2600");
+          for(x = 0; x < friendRequests.length; x++){
+            htmlString += "<br><a class='whiteText friendRow' href='/profile/"+friendRequests[x].username+"' id='"+friendRequests[x].userID+"'><p class='NewsContent' style='display:inline-block'>"+friendRequests[x].username+"</p></a><button style='float:right' class='btn friendbutton btn-danger' id='decline'>Decline</button><button class='btn friendbutton btn-success' id='accept' style='float:right'>Accept</button><br/><br/>";
+          }
+        }else if(checkFeed == 5){
+          $("#5").css("background-color", "#7A2600");
+          for(x = 0; x < friends.length; x++){
+            htmlString += "<br><p class='NewsContent'><a class='friendRow whiteText' href='/profile/"+friends[x].username+"' id='"+friends[x].userID+"'><span>"+friends[x].username+"</span></a><button style='float:right' class='btn btn-danger friendbutton' id='decline'>Unfriend</button></p><br/>";
+          }
+        }else{
+          $("#6").css("background-color", "#7A2600");
+          for(x = 0; x < gamesFollowed.length; x++){
+            htmlString += "<br><p class='NewsContent'><a class='whiteText' style='margin-left:0px !important' href='/gamePage/"+gamesFollowed[x].GameID+"'>"+gamesFollowed[x].Game_Name+"</a></p><br/>";
+          }
+        }
+        htmlString += "</div>";
+        $(".feedContent").append(htmlString);
+        if($(".contents").height() > height){
+              $(".navMenu").css("height", $(".contents").height());
+        }
+    });
+    $(".feedContent").on('click', '.friendbutton', function(){
+          var formData = new FormData();
+          formData.append("operation", $(this).attr('id'));
+          formData.append("friendID", $(this).siblings(".friendRow").attr('id'));
+          console.log($(this).siblings(".friendRow").attr('id'));
+          $.ajax({
+              url: '/FriendResponse',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                   window.location.href = '/profile';
+              }
+          })
+    });
+    $(".feedContent").on('click', '.postfeed', function(){
+          var formData = new FormData();
+          formData.append("newsfeed", $(this).siblings(".inputfeed").val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/postUserfeed',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                   window.location.href = '/profile';
+              }
+          })
+    });
+    $(".submitProfPic").click(function(){
+        var formData = new FormData();
+        if($(".uploadProfPic").get(0).files[0]){
+          formData.append("picture", $(".uploadProfPic").get(0).files[0]);
+          formData.append("desc", $('.descriptionProf').val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/uploadProfPic',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                window.location.href = "/profile";
+              }
+          })
+        }else{
+          formData.append("desc", $('.descriptionProf').val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/uploadProfPic',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                window.location.href = "/profile";
+              }
+          })
+        }
+    });
+    function getGameName(id){
+      for(y = 0; y < gamesFollowed.length && gamesFollowed[y].GameID != id; y++){
+        console.log(gamesFollowed[0].GameID);
+      }
+      return gamesFollowed[y].Game_Name;
+    }
+    function getBuddyName(id){
+      for(y = 0; y < friends.length && friends[y].userID != id; y++){}
+      return friends[y].username;
+    }
+  });
+</script>

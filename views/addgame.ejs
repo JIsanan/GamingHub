@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Games</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-12 navBackground" style='font-family: followrate; font-size:20px'>
+    <br>
+      Game Name:<br><input style="color:black !important; font-family:Arial; color:black; width:40%; font-size:15px;  padding-left:10px" class="Name" type="text" name="user">
+      <br>Platform:
+      <select class="platform" style="color:black !important"  name="platform">
+      </select><br>
+      Description:<br><textarea rows="5" class="description" style="font-family:Arial;color:black !important; color:black; width:40%; font-size:15px; padding-left:10px"  type="description" name="description"></textarea><br>
+    <button value="AddGame" style='margin-bottom:30px; border-radius:0' class="Submit oyea btn btn-success">Submit Game</button>
+  </div>
+</div>
+</body>
+</html>
+<script>
+  $(document).ready(function(){
+    var platforms =  <%- JSON.stringify(platforms) %>;
+    var ctr;
+    for(ctr = 0; ctr < platforms.length ; ctr++){
+      $("select").append("<option>"+ platforms[ctr].Platform_Name + "</option>");
+    }
+    $("button").click(function(){
+      if($(".Name").val().length != 0 && $(".description").val().length != 0){
+          var formData = new FormData();
+          formData.append("name", $('.Name').val().replace(/'/g,"''"));
+          formData.append("platform", $('.platform').val().replace(/'/g,"''"));
+          formData.append("description", $('.description').val().replace(/'/g,"''"));
+          $.ajax({
+              url: '/gameAdded',
+              data: formData,
+              type: 'POST',
+              // THIS MUST BE DONE FOR FILE UPLOADING
+              contentType: false,
+              processData: false,
+              success: function(data){
+                window.location.href = 'games';
+              }
+          })
+      }
+    });
+  });
+</script>

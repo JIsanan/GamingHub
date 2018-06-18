@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    p{
+    font-size:26px;
+    }
+    .resultuser p{
+      display:inline-block;
+      padding-left: 20px;
+    }
+    .resultuser{
+      width:330px;
+      padding-bottom: 20px;
+    }
+    .resultuser img{
+      height:100px;
+      width:100px;
+      border-radius: 50%;
+    }
+    .resultgame p{
+      color:white;
+    }
+    .resultuser p{
+      color:white;
+    }
+    .resultgame a:hover{
+      color:orange;
+    }
+    .resultgame {
+    width:330px;
+    display:inline-block;
+    }
+    .resultgame img{
+    height:auto;
+    }
+  </style>
+  <title>Search</title>
+  <% include includes/navbar.ejs %>
+  <div class="row fontProfile col-md-8 col-md-offset-2 col-xs-13 navBackground" style='margin-bottom : 0px;'>
+    <br/><br/>
+    <input type='text' style='color:black; width:100%; height:40px; font-size:30px; margin-bottom:5px; padding-left:10px' class='search' placeholder='Search' />
+    <p style='margin-left: 18px;color:orange;'>USERS</p><div class='contUsers'></div>
+    <p style='margin-top:20px;margin-left: 18px;color:orange;'>GAMES</p><div class='contGames' style='display:none'></div>
+  </div>
+</div>
+</body>
+</html>
+<script>
+$(document).ready(function(){
+  var searchinterval;
+  var ctr;
+  var htmlString;
+  $(".search").on('keyup', function(){
+    $(".contGames").fadeOut(300);
+    $(".contUsers").fadeOut(300);
+    clearInterval(searchinterval);
+    $(".resultgame").remove();
+    $(".resultuser").remove();
+    if($(".search").val().length != 0){
+      searchinterval = setTimeout(function(){
+        var formData = new FormData();
+        formData.append("search", $(".search").val().replace(/'/g,"''"));
+        $.ajax({
+          url: '/searchData',
+          data: formData,
+          type: 'POST',
+          // THIS MUST BE DONE FOR FILE UPLOADING
+          contentType: false,
+          processData: false,
+          success: function(data){
+            console.log(data);
+            for(ctr = 0; ctr < data.user.length; ctr++){
+              $(".contUsers").append("<div class='resultuser' style='display:inline-block;width: 30vw'><a href='/profile/"+data.user[ctr].username+"'><img src='ppics/"+data.user[ctr].userID+"'><p>"+data.user[ctr].username+"</p></a></div>");
+            }
+            for(ctr = 0; ctr < data.game.length; ctr++){
+               $(".contGames").append("<div class='resultgame' style='display:inline-block;width: 30vw'><a href='/gamePage/"+data.game[ctr].GameID+"'> <img style='height:150px; width:100px' src='gamepics/"+data.game[ctr].GameID+"''><p>"+data.game[ctr].Game_Name+"</p></a></div>");
+                  // $(".contGames").append("<div class='resultgame'> </div>");
+            }
+            $("img").each(function (){
+              this.onerror = function() {
+                  console.log('im in');
+                  this.src='gamepics/default.jpg';
+              }
+            });
+            $(".contGames").fadeIn(300);
+            $(".contUsers").fadeIn(300);
+          }
+        })
+      }, 300);
+    }
+  });
+})
+</script>

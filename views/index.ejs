@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<title>Gaming Hub</title>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel='stylesheet' href='css/bootstrap.css'>
+  <script src="js/jquery-3.1.1.js"></script>
+</head>
+<style>
+	body{
+		background-color: #4b4e4d;
+	}
+	.mainCont{
+		display: inline-block;
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		transform: translateY(-50%);
+		transform: translateX(-50%);
+	}
+  .flaggy{
+		display: inline-block;
+		position: absolute;
+		top: 30%;
+		left: 55%;
+		transform: translateY(-50%);
+    font-weight: bold;
+		transform: translateX(-50%);
+	}
+	.mainCont2{
+		display: none;
+		position: absolute;
+		top: 40%;
+		left: 50%;
+		transform: translateY(-50%);
+		transform: translateX(-50%);
+	}
+	.Login{
+		font-family: Verdana;
+		border-radius: 3px;
+		height: 5vh;
+		background-color: #2c2e2d !important;
+		margin-bottom: 5px;
+	}
+	input, select, textarea{
+		color: white !important;
+	}
+	textarea:focus, input:focus, .uneditable-input:focus {
+		border-color: rgba(0, 0, 0, 0) !important;
+		box-shadow: 0 0px 0px rgba(0, 0, 0, 0) inset, 0 0 1px rgba(0, 0, 0, 0.6) !important;
+		outline: 0 none !important;
+	}
+	textarea, input, .uneditable-input {
+		border-color: rgba(0, 0, 0, 0) !important;
+		box-shadow: 0 0px 0px rgba(0, 0, 0, 0) inset, 0 0 1px rgba(0, 0, 0, 0.6) !important;
+		outline: 0 none !important;
+	}
+	.Submit{
+		width: 100%;
+		height: 5vh;
+		margin-bottom: 7px;
+	}
+	.highlight {
+		-webkit-box-shadow:0 0 15px red !important;
+		-moz-box-shadow: 0 0 15px red !important;
+		box-shadow:0 0 15px red !important;
+	}
+</style>
+<body id='wholePage'>
+<div class='container-fluid'>
+  <div class='row'>
+    <p class='flaggy col-md-3 col-xs-8 col-sm-8' style="color:white;"></p>
+  </div>
+	<div class="row">
+	<div class='mainCont col-md-3 col-xs-8 col-sm-8'>
+    <form method="POST" action="/login">
+  		<div class="form-group has-feedback">
+  			<input class="Login form-control" type="text" name="user" value="Username">
+  			<i class="glyphicon glyphicon-user form-control-feedback" style="color:white;"></i>
+  		</div>
+  		<div class="form-group has-feedback">
+  			<i class="glyphicon glyphicon-cog form-control-feedback" style="color:white;"></i>
+  			<input class="Login form-control pass" type="text" name="pass" value="Password">
+  		</div>
+  		<input type="submit" value="Login" class="Submit btn btn-success">
+  		<button type="button" class="Submit mama btn btn-info">Register</button>
+    </form>
+	</div>
+	<div class='hightlight mainCont2 col-md-3 col-xs-8 col-sm-8'>
+  		<div class="form-group has-feedback">
+  			<input class="Login reguser form-control" type="text" name="user" value="Username">
+  			<i class="glyphicon glyphicon-user form-control-feedback" style="color:white;"></i>
+  		</div>
+  		<div class="form-group has-feedback">
+  			<i class="glyphicon glyphicon-cog form-control-feedback" style="color:white;"></i>
+  			<input class="Login regpass form-control pass" type="text" name="pass" value="Password">
+  		</div>
+  		<div class="form-group has-feedback">
+  			<i class="glyphicon glyphicon-envelope form-control-feedback" style="color:white;"></i>
+  			<input class="Login regmail form-control" type="text" name="email" value="Email">
+  		</div>
+  		<button value="Register" class="Submit oyea btn btn-primary">Register</button>
+	</div>
+	</div>
+</div>
+</body>
+</html>
+<script>
+	var pass = "Password";
+	var user = "Username";
+	var mail = "Email";
+  var flagger = <%= flag %>;
+	$(document).ready(function(){
+		$(".mama").click(function(){
+			$(".mainCont").fadeToggle("slow", function(){$(".mainCont2").fadeToggle("slow");});
+		});
+		$(".oyea").click(function(){
+			if( $(".reguser").val().length != 0 && $(".regpass").val().length != 0  && $(".regmail").val().length != 0 &&
+				$(".reguser").val() != user && $(".regpass").val() != pass  && $(".regmail").val() != mail
+			){
+        var formData = new FormData();
+        formData.append("username", $('.reguser').val());
+        formData.append("password", $('.regpass').val());
+        formData.append("email", $('.regmail').val());
+        formData.append("reg", 1);
+				$(".reguser").removeClass("highlight");
+				$(".regpass").removeClass("highlight");
+				$(".regmail").removeClass("highlight");
+        $.ajax({
+            url: '/register',
+            data: formData,
+            type: 'POST',
+            // THIS MUST BE DONE FOR FILE UPLOADING
+            contentType: false,
+            processData: false,
+            success: function(data){
+              if(data == "good"){
+                $(".flaggy").fadeIn(300);
+                $(".flaggy").html("Registered successfully");
+                $(".mainCont2").fadeToggle("slow", function(){$(".mainCont").fadeToggle("slow");});
+              }else{
+                $(".flaggy").fadeIn(300);
+                $(".flaggy").html("Please review your inputs");
+              }
+            }
+        })
+			}else{
+        $(".flaggy").fadeIn(300);
+        $(".flaggy").html("Please input valid data.");
+				if($(".reguser").val().length == 0 || $(".reguser").val() == user){
+					$(".reguser").addClass("highlight");
+				}else{
+					$(".reguser").removeClass("highlight");
+				}
+				if($(".regpass").val().length == 0 || $(".regpass").val() == pass){
+					$(".regpass").addClass("highlight");
+				}else{
+					$(".regpass").removeClass("highlight");
+				}
+				if($(".regmail").val().length == 0 || $(".regmail").val() == mail){
+					$(".regmail").addClass("highlight");
+				}else{
+					$(".regmail").removeClass("highlight");
+				}
+			}
+		});
+		$(".pass").focus(function(){
+			this.type = "password";
+		}).blur(function(){
+			if($(this).val() == pass){
+				this.type = "text";
+			}
+		});
+    $(".regpass").focusout(function(){
+      if($(this).val() == "Password"){
+        $(".flaggy").fadeIn(300);
+        $(".flaggy").html("Please change Password");
+        $(".regpass").addClass("highlight");
+      }else{
+        $(".flaggy").fadeOut(300);
+        $(".regpass").removeClass("highlight");
+      }
+    });
+    $(".reguser").focusout(function(){
+      var formData = new FormData();
+      formData.append("username", $('.reguser').val());
+      formData.append("reg", -1);
+      $.ajax({
+          url: '/register',
+          data: formData,
+          type: 'POST',
+          // THIS MUST BE DONE FOR FILE UPLOADING
+          contentType: false,
+          processData: false,
+          success: function(data){
+            if(data != "good"){
+              $(".reguser").addClass("highlight");
+              $(".flaggy").fadeIn(300);
+              $(".flaggy").html("Username has been taken");
+            }else{
+              if($(".reguser").val() == "Username"){
+                $(".flaggy").fadeIn(300);
+                $(".flaggy").html("Please change Username");
+                $(".reguser").addClass("highlight");
+              }else{
+                $(".flaggy").fadeOut(300);
+                $(".reguser").removeClass("highlight");
+              }
+            }
+          }
+      })
+		});
+    $(".regmail").focusout(function(){
+      var formData = new FormData();
+      formData.append("mail", $('.regmail').val());
+      formData.append("reg", 0);
+      $.ajax({
+          url: '/register',
+          data: formData,
+          type: 'POST',
+          // THIS MUST BE DONE FOR FILE UPLOADING
+          contentType: false,
+          processData: false,
+          success: function(data){
+            if(data != "good"){
+              $(".regmail").addClass("highlight");
+              $(".flaggy").fadeIn(300);
+              $(".flaggy").html("Email has been taken");
+            }else{
+              if($(".regmail").val() == "Email"){
+                $(".flaggy").fadeIn(300);
+                $(".flaggy").html("Please change Email.");
+                $(".regmail").addClass("highlight");
+              }else{
+                $(".flaggy").fadeOut(300);
+                $(".regmail").removeClass("highlight");
+              }
+            }
+          }
+      })
+    });
+    if(flagger == 0){
+      $(".flaggy").html("Welcome to GamingHub");
+    }else if(flagger == 1){
+      $(".flaggy").html("Username has been taken");
+    }else if(flagger == 2){
+      $(".flaggy").html("Email has been taken");
+    }else if(flagger == 4){
+      $(".flaggy").html("Incorrect credentials");
+    }else if(flagger == 5){
+      $(".flaggy").html("Login success");
+    }else{
+      $(".flaggy").html("Registration successful");
+    }
+	});
+</script>
